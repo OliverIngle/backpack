@@ -1,45 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Todos from './Todos';
+import TodoList from './TodoList';
 import { v4 as uuidv4 } from 'uuid';
-
-const LOCALKEY = 'todos'
 
 function App() {
 
-  const [todos, setTodos] = useState([ ]);
+  //creating todo list
+  const [todos, setTodos] = useState([]);
 
-  const todoRef = useRef();
+  //getting input value
+  const todoInput = useRef(null)
 
-  useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem(LOCALKEY));
-    if (storedTodos) setTodos(storedTodos);
-  }, []);
+  function addTodo() {
 
-  useEffect(() => {
-    localStorage.setItem(LOCALKEY, JSON.stringify(todos));
-  }, [todos]);
+    let value = todoInput.current.value;
 
-  function toggleTodo(id) {
-    const newTodos = [...todos]
-    const todo = newTodos.find(todo => todo.id === id)
-    todo.complete = !todo.complete
-    setTodos(newTodos)
-  }
+    setTodos((old) => {
 
-  function handleAdd(e) {
-    const name = todoRef.current.value;
-    if (name === '') return;
-    setTodos(prevTodos => {
-      return [...prevTodos, {id: uuidv4(), name: name, complete: false}]
-    })
-    todoRef.current.value = null;
+      return [...old, {id: uuidv4(), value, complete: false}]
+
+    });
+
+    todoInput.current.value = null;
   }
 
   return (
     <>
-       <Todos todos={todos} toggleTodo={toggleTodo}/>
-       <input type="text" ref={todoRef}></input>
-       <button onClick={handleAdd}>add</button>
+      <TodoList todos={ todos }/>
+      <input ref={todoInput} type="text"></input>
+      <button onClick={addTodo}>add</button>
     </>
   );
 }
